@@ -29,33 +29,23 @@ class RegisteredUserController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
     public function store(Request $request): RedirectResponse
-{
-    // Validate the incoming registration request
-    $request->validate([
-        'name' => ['required', 'string', 'max:255'],
-        'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-        'password' => ['required', 'confirmed', Rules\Password::defaults()],
-    ]);
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
 
-    // Check if the email is for an admin (you can adjust the condition here)
-    $isAdmin = $request->email === 'admin@example.com';  // Adjust this to your condition
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
 
-    // Create the user (admin or regular user)
-    $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'is_admin' => $isAdmin,  // Set 'is_admin' based on the condition
-    ]);
+        event(new Registered($user));
 
-    // Fire the Registered event
-    event(new Registered($user));
+        Auth::login($user);
 
-    // Log the user in
-    Auth::login($user);
-
-    // Redirect to home (or admin dashboard if admin)
-    return redirect($isAdmin ? route('admin.dashboard') : RouteServiceProvider::HOME);
-}
-
+        return redirect(RouteServiceProvider::HOME);
+    }
 }
