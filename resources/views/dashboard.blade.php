@@ -10,7 +10,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    <h2 class="text-2xl font-bold mb-4">All Users</h2>
+                    <h2 class="text-2xl font-bold mb-4">murtaza mansoor</h2>
 
                     <table class="min-w-full bg-white">
                         <thead class="bg-gray-200">
