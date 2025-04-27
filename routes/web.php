@@ -2,39 +2,39 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
-
+// Redirect root to login
 Route::get('/', function () {
     return redirect()->route('login');
 });
 
-// USER dashboard - without auth (or you can add auth if you want)
-Route::get('/user-dashboard', [AdminController::class, 'showUserDashboard'])->middleware(['auth', 'verified']);
+// Admin routes - Only authenticated and verified users
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Admin dashboard route
+    Route::get('/admin/dashboard', [AdminController::class, 'showAdminDashboard'])
+        ->name('admin.dashboard');
 
-// ADMIN dashboard - with auth and verified
-Route::get('/admin-dashboard', [AdminController::class, 'showAdminDashboard'])->middleware(['auth', 'verified']);
+    // User dashboard route
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
-// Default dashboard route after login
-Route::get('/dashboard', [AdminController::class, 'showUserDashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+    // Admin user management routes
+    Route::prefix('admin')->group(function () {
+        Route::get('/users/{user}/edit', [AdminController::class, 'editUser'])
+            ->name('admin.user.edit');
+        Route::put('/users/{user}', [AdminController::class, 'updateUser'])
+            ->name('admin.user.update');
+        Route::delete('/users/{user}', [AdminController::class, 'destroyUser'])
+            ->name('admin.user.destroy');
+    });
 
-// Profile routes
-Route::middleware('auth')->group(function () {
+    // Profile routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Auth routes
+// Authentication routes
 require __DIR__.'/auth.php';
-
-// Admin routes (added part)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/dashboard', [AdminController::class, 'showAdminDashboard'])->name('admin.dashboard'); // This is the new route
-});
