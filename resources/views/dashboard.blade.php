@@ -39,7 +39,7 @@
 
                     {{-- Normal User ko News dikhao --}}
                     @else
-                        <h2 class="text-3xl font-bold mt-10 mb-6 text-center text-gray-800">📰 Latest News</h2>
+                        <h2 class="text-3xl font-bold mt-10 mb-6 text-center text-gray-800">📰 Latest News , Last updated </h2>
 
                         @if(isset($news['results']) && count($news['results']) > 0)
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
