@@ -25,7 +25,7 @@ class DashboardController extends Controller
             $news = $response->json();
 
             // Save to database
-            LatestNews::create([
+             LatestNews::create([
                 'news' => $news,
                 'last_updated' => Carbon::now()
             ]);
